@@ -1,0 +1,23 @@
+{
+  "name": "apple_stock",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/realcxj1989/apple_stock.git"
+  },
+  "author": "realcxj1989 <362377487@qq.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/realcxj1989/apple_stock/issues"
+  },
+  "homepage": "https://github.com/realcxj1989/apple_stock#readme",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "sound-play": "^1.1.0"
+  }
+}
