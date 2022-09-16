@@ -10,3 +10,7 @@
  npm start
 ```
 
+### 使用命令行交互式查询。。方便易上手
+![img.png](img.png)
+![img_1.png](img_1.png)
+![img_2.png](img_2.png)
