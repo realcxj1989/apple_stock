@@ -1,6 +1,7 @@
 const axios = require('axios');
 const sound = require('sound-play');
 const path = require('path');
+const inquirer = require('inquirer');
 const platform = {
     'MQ203CH/A': 'iphone14pro gold 512gb',
     'MQ263CH/A': 'iphone14pro deeppurple 512gb',
@@ -41,9 +42,9 @@ const platform = {
  * @type {{'MQ873CH/A': string, 'MQ8A3CH/A': string}}
  */
 const models = {
-    'MQ873CH/A': '上海 黄浦区',
-    'MQ8A3CH/A': '上海 黄浦区',
-    'MQ883CH/A': '上海 黄浦区',
+    'MQ873CH/A': '上海 黄浦区',  // 256G 黑色
+    'MQ8A3CH/A': '上海 黄浦区',  // 256G 紫色
+    'MQ883CH/A': '上海 黄浦区',  // 256G 银色
 }
 
 const monitorIphoneStorage = async (productName, locationName) => {
@@ -57,7 +58,10 @@ const monitorIphoneStorage = async (productName, locationName) => {
                 const {pickupDisplay} = store.partsAvailability[productName];
                 console.log(store.storeName, pickupDisplay);
                 const filePath = path.join(__dirname, "hyl.mp3");
-                pickupDisplay === 'available' && sound.play(filePath);
+                if (pickupDisplay === 'available') {
+                    await sound.play(filePath);
+                    process.exit(1);
+                }
             } catch (e) {
                 console.error('解析店铺信息出错');
             }
@@ -69,18 +73,57 @@ const monitorIphoneStorage = async (productName, locationName) => {
             storage: '无货可用商店',
         });
     }
-
 }
-
-/**
- * Run program in loop
- */
-setInterval(async () => {
-    for (const [productName, locationName] of Object.entries(models)) {
-        try {
-            await monitorIphoneStorage(productName, locationName);
-        } catch (e) {
-            console.error(e);
+const choices = [];
+for (const key in platform) {
+    choices.push({
+        name: platform[key],
+        value: key,
+    })
+}
+inquirer.prompt([
+    {
+        type: "checkbox",
+        name: "types",
+        message: "请选择您要查询的iPhone型号?",
+        choices: choices,
+    },
+    {
+        type: "input",
+        name: "address",
+        message: "请输入您的省市区（例：浙江 杭州 上城区 / 上海 黄浦区） :",
+        validate: function (value) {
+            if (/.+/.test(value)) {
+                return true;
+            }
+            return "address is required";
+        },
+        default: '上海 黄浦区'
+    },
+    {
+        type: "input",
+        name: "interval",
+        message: "请输入查询间隔(最小间隔2秒默认5秒) :",
+        default: 5,
+        validate: function (value) {
+            if (/^\d+$/.test(value) && value > 1) {
+                return true;
+            }
+            return "interval is required";
         }
     }
-}, 1000 * 5); // 5s
+])
+    .then(answers => {
+        const {address, types, interval} = answers;
+        console.log(`地址：${address}，型号：${types.map(type => platform[type]).join(',')}，查询间隔：${interval}秒`);
+        setInterval(async () => {
+            try {
+                for (const type of types) {
+                    monitorIphoneStorage(type, address);
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }, 1000 * interval); // 5s
+    });
+

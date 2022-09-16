@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -18,6 +19,7 @@
   "homepage": "https://github.com/realcxj1989/apple_stock#readme",
   "dependencies": {
     "axios": "^0.27.2",
+    "inquirer": "^8.2.4",
     "sound-play": "^1.1.0"
   }
 }
