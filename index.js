@@ -76,6 +76,7 @@ const models = {
     'MQ8A3CH/A': '上海 黄浦区',  // 256G 紫色
     'MQ883CH/A': '上海 黄浦区',  // 256G 银色
 }
+let myVar;
 
 const monitorIphoneStorage = async (productName, locationName) => {
     const url = encodeURI(`https://www.apple.com.cn/shop/fulfillment-messages?pl=true&mts.0=regular&parts.0=${productName}&location=${locationName}`);
@@ -89,7 +90,8 @@ const monitorIphoneStorage = async (productName, locationName) => {
                     const {pickupDisplay} = store.partsAvailability[productName];
                     const filePath = path.join(__dirname, "hyl.mp3");
                     if (pickupDisplay === 'available') {
-                        console.log(`有货了，快去抢吧！${productName} ${store.storeName} address:${JSON.stringify(store.address)}`);
+                        clearInterval(myVar)
+                        console.log(`有货了，快去抢吧！${subHeader} ${store.storeName} address:${JSON.stringify(store.address)}`);
                         await sound.play(filePath);
                         process.exit(1);
                     }
@@ -149,7 +151,7 @@ inquirer.prompt([
     .then(answers => {
         const {address, types, interval} = answers;
         console.log(`地址：${address}，型号：${types.map(type => platform[type]).join(',')}，查询间隔：${interval}秒`);
-        setInterval(async () => {
+        myVar = setInterval(async () => {
             try {
                 for (const type of types) {
                     monitorIphoneStorage(type, address);
