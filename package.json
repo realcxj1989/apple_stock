@@ -1,7 +1,7 @@
 {
   "name": "apple_stock",
   "version": "1.0.0",
-  "description": "",
+  "description": "Check iPhone14 Pro series inventory",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
