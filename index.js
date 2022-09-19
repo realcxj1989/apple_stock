@@ -3,6 +3,36 @@ const sound = require('sound-play');
 const path = require('path');
 const inquirer = require('inquirer');
 const platform = {
+    'MPU93CH/A': 'iphone14 midnight 128gb',
+    'MPX63CH/A': 'iphone14 purple 512gb',
+    'MPX03CH/A': 'iphone14 starlight 512gb',
+    'MPW73CH/A': 'iphone14 purple 256gb',
+    'MPVU3CH/A': 'iphone14 midnight 256gb',
+    'MPV63CH/A': 'iphone14 product_red 128gb',
+    'MPW13CH/A': 'iphone14 starlight 256gb',
+    'MPUW3CH/A': 'iphone14 purple 128gb',
+    'MPWT3CH/A': 'iphone14 midnight 512gb',
+    'MPWE3CH/A': 'iphone14 product_red 256gb',
+    'MPVG3CH/A': 'iphone14 blue 128gb',
+    'MPXD3CH/A': 'iphone14 product_red 512gb',
+    'MPUJ3CH/A': 'iphone14 starlight 128gb',
+    'MPXK3CH/A': 'iphone14 blue 512gb',
+    'MPWL3CH/A': 'iphone14 blue 256gb',
+    'MQ393CH/A': 'iphone14plus product_red 128gb',
+    'MQ3J3CH/A': 'iphone14plus starlight 512gb',
+    'MQ3G3CH/A': 'iphone14plus blue 256gb',
+    'MQ3P3CH/A': 'iphone14plus product_red 512gb',
+    'MQ3D3CH/A': 'iphone14plus starlight 256gb',
+    'MQ3Q3CH/A': 'iphone14plus blue 512gb',
+    'MQ3F3CH/A': 'iphone14plus product_red 256gb',
+    'MQ363CH/A': 'iphone14plus starlight 128gb',
+    'MQ3E3CH/A': 'iphone14plus purple 256gb',
+    'MQ3C3CH/A': 'iphone14plus midnight 256gb',
+    'MQ3K3CH/A': 'iphone14plus purple 512gb',
+    'MQ373CH/A': 'iphone14plus purple 128gb',
+    'MQ353CH/A': 'iphone14plus midnight 128gb',
+    'MQ3A3CH/A': 'iphone14plus blue 128gb',
+    'MQ3H3CH/A': 'iphone14plus midnight 512gb',
     'MQ203CH/A': 'iphone14pro gold 512gb',
     'MQ263CH/A': 'iphone14pro deeppurple 512gb',
     'MQ2Y3CH/A': 'iphone14pro deeppurple 1tb',
@@ -57,7 +87,6 @@ const monitorIphoneStorage = async (productName, locationName) => {
             for (const store of stores) {
                 try {
                     const {pickupDisplay} = store.partsAvailability[productName];
-                    console.log(store.storeName, pickupDisplay);
                     const filePath = path.join(__dirname, "hyl.mp3");
                     if (pickupDisplay === 'available') {
                         await sound.play(filePath);
@@ -67,13 +96,9 @@ const monitorIphoneStorage = async (productName, locationName) => {
                     console.error('解析店铺信息出错');
                 }
             }
-        } else {
-            console.log(subHeader, {
-                productName,
-                locationName,
-                storage: '无货可用商店',
-            });
         }
+        console.log(subHeader, locationName, '无货可用商店');
+
     } catch (e) {
         console.error(e.message);
     }
@@ -93,18 +118,19 @@ inquirer.prompt([
         message: "请选择您要查询的iPhone型号?",
         choices: choices.sort((a, b) => a.name.localeCompare(b.name)),
         default: ['MQ873CH/A', 'MQ8A3CH/A', 'MQ883CH/A'],
+        // default: ['MPVU3CH/A']
     },
     {
         type: "input",
         name: "address",
-        message: "请输入您的省市区（例：浙江 杭州 上城区 / 上海 黄浦区） :",
+        message: "请输入您的省市区（例：浙江 杭州 上城区 / 上海 上海 杨浦区） :",
         validate: function (value) {
             if (/.+/.test(value)) {
                 return true;
             }
             return "address is required";
         },
-        default: '上海 黄浦区'
+        default: '上海 上海 杨浦区'
     },
     {
         type: "input",
