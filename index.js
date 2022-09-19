@@ -75,7 +75,7 @@ const monitorIphoneStorage = async (productName, locationName) => {
             });
         }
     } catch (e) {
-        console.error(e);
+        console.error(e.message);
     }
 
 }
@@ -91,7 +91,8 @@ inquirer.prompt([
         type: "checkbox",
         name: "types",
         message: "请选择您要查询的iPhone型号?",
-        choices: choices,
+        choices: choices.sort((a, b) => a.name.localeCompare(b.name)),
+        default: ['MQ873CH/A', 'MQ8A3CH/A', 'MQ883CH/A'],
     },
     {
         type: "input",
@@ -127,7 +128,7 @@ inquirer.prompt([
                     monitorIphoneStorage(type, address);
                 }
             } catch (e) {
-                console.error(e);
+                console.error(e.message);
             }
         }, 1000 * interval); // 5s
     });
