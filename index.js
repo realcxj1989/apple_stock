@@ -89,6 +89,7 @@ const monitorIphoneStorage = async (productName, locationName) => {
                     const {pickupDisplay} = store.partsAvailability[productName];
                     const filePath = path.join(__dirname, "hyl.mp3");
                     if (pickupDisplay === 'available') {
+                        console.log(`有货了，快去抢吧！${productName} ${store.storeName} address:${JSON.stringify(store.address)}`);
                         await sound.play(filePath);
                         process.exit(1);
                     }
