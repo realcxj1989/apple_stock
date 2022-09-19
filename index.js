@@ -49,30 +49,35 @@ const models = {
 
 const monitorIphoneStorage = async (productName, locationName) => {
     const url = encodeURI(`https://www.apple.com.cn/shop/fulfillment-messages?pl=true&mts.0=regular&parts.0=${productName}&location=${locationName}`);
-    const res = await axios.get(url);
-    const {stores} = res.data.body.content.pickupMessage;
-    const {subHeader} = res.data.body.content.deliveryMessage[productName].regular;
-    if (Array.isArray(stores) && stores.length > 0) {
-        for (const store of stores) {
-            try {
-                const {pickupDisplay} = store.partsAvailability[productName];
-                console.log(store.storeName, pickupDisplay);
-                const filePath = path.join(__dirname, "hyl.mp3");
-                if (pickupDisplay === 'available') {
-                    await sound.play(filePath);
-                    process.exit(1);
+    try {
+        const res = await axios.get(url);
+        const {stores} = res.data.body.content.pickupMessage;
+        const {subHeader} = res.data.body.content.deliveryMessage[productName].regular;
+        if (Array.isArray(stores) && stores.length > 0) {
+            for (const store of stores) {
+                try {
+                    const {pickupDisplay} = store.partsAvailability[productName];
+                    console.log(store.storeName, pickupDisplay);
+                    const filePath = path.join(__dirname, "hyl.mp3");
+                    if (pickupDisplay === 'available') {
+                        await sound.play(filePath);
+                        process.exit(1);
+                    }
+                } catch (e) {
+                    console.error('解析店铺信息出错');
                 }
-            } catch (e) {
-                console.error('解析店铺信息出错');
             }
+        } else {
+            console.log(subHeader, {
+                productName,
+                locationName,
+                storage: '无货可用商店',
+            });
         }
-    } else {
-        console.log(subHeader, {
-            productName,
-            locationName,
-            storage: '无货可用商店',
-        });
+    } catch (e) {
+        console.error(e);
     }
+
 }
 const choices = [];
 for (const key in platform) {
