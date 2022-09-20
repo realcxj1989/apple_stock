@@ -20,6 +20,7 @@
   "dependencies": {
     "axios": "^0.27.2",
     "inquirer": "^8.2.4",
+    "open": "^8.4.0",
     "sound-play": "^1.1.0"
   }
 }

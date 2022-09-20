@@ -1,4 +1,5 @@
 const axios = require('axios');
+const open = require('open');
 const sound = require('sound-play');
 const path = require('path');
 const inquirer = require('inquirer');
@@ -78,7 +79,7 @@ const models = {
 }
 let myVar;
 
-const monitorIphoneStorage = async (productName, locationName) => {
+const monitorIphoneStorage = async (productName, locationName, openBrowser) => {
     const url = encodeURI(`https://www.apple.com.cn/shop/fulfillment-messages?pl=true&mts.0=regular&parts.0=${productName}&location=${locationName}`);
     try {
         const res = await axios.get(url);
@@ -90,6 +91,9 @@ const monitorIphoneStorage = async (productName, locationName) => {
                     const {pickupDisplay} = store.partsAvailability[productName];
                     const filePath = path.join(__dirname, "hyl.mp3");
                     if (pickupDisplay === 'available') {
+                        if (openBrowser !== 'false') {
+                            open(`https://www.apple.com.cn/shop/bag`, {app: {name: openBrowser}});
+                        }
                         clearInterval(myVar)
                         console.log(`有货了，快去抢吧！${subHeader} ${store.storeName} address:${JSON.stringify(store.address)}`);
                         await sound.play(filePath);
@@ -101,7 +105,6 @@ const monitorIphoneStorage = async (productName, locationName) => {
             }
         }
         console.log(subHeader, locationName, '无货可用商店');
-
     } catch (e) {
         console.error(e.message);
     }
@@ -146,15 +149,41 @@ inquirer.prompt([
             }
             return "interval is required";
         }
+    }, {
+        type: 'list',
+        name: 'openBrowser',
+        message: "发现库存后是否自动打开购物车网页(需提前加入购物车):",
+        choices: [
+            {
+                name: '不打开',
+                value: 'false',
+            },
+            {
+                name: '打开chorme',
+                value: 'google chrome',
+                checked: true
+            },
+            {
+                name: '打开safari',
+                value: 'safari'
+            }, {
+                name: '打开firefox',
+                value: 'firefox'
+            }, {
+                name: '打开edge',
+                value: 'edge'
+            }
+        ]
+
     }
 ])
     .then(answers => {
-        const {address, types, interval} = answers;
+        const {address, types, interval, openBrowser} = answers;
         console.log(`地址：${address}，型号：${types.map(type => platform[type]).join(',')}，查询间隔：${interval}秒`);
         myVar = setInterval(async () => {
             try {
                 for (const type of types) {
-                    monitorIphoneStorage(type, address);
+                    monitorIphoneStorage(type, address, openBrowser);
                 }
             } catch (e) {
                 console.error(e.message);
