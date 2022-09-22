@@ -96,8 +96,10 @@ const monitorIphoneStorage = async (param) => {
                         }
                         clearInterval(myVar)
                         console.log(`有货了，快去抢吧！${subHeader} ${store.storeName} address:${JSON.stringify(store.address)}`);
-                        const filePath = path.join(__dirname, "hyl.mp3");
-                        await sound.play(filePath);
+                        if (playMuisc) {
+                            const filePath = path.join(__dirname, "hyl.mp3");
+                            await sound.play(filePath);
+                        }
                         process.exit(1);
                     }
                 } catch (e) {
