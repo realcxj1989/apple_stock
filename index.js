@@ -79,7 +79,8 @@ const models = {
 }
 let myVar;
 
-const monitorIphoneStorage = async (productName, locationName, openBrowser) => {
+const monitorIphoneStorage = async (param) => {
+    const {productName, locationName, openBrowser, playMuisc} = param
     const url = encodeURI(`https://www.apple.com.cn/shop/fulfillment-messages?pl=true&mts.0=regular&parts.0=${productName}&location=${locationName}`);
     try {
         const res = await axios.get(url);
@@ -89,13 +90,13 @@ const monitorIphoneStorage = async (productName, locationName, openBrowser) => {
             for (const store of stores) {
                 try {
                     const {pickupDisplay} = store.partsAvailability[productName];
-                    const filePath = path.join(__dirname, "hyl.mp3");
                     if (pickupDisplay === 'available') {
                         if (openBrowser !== 'false') {
                             open(`https://www.apple.com.cn/shop/bag`, {app: {name: openBrowser}});
                         }
                         clearInterval(myVar)
                         console.log(`有货了，快去抢吧！${subHeader} ${store.storeName} address:${JSON.stringify(store.address)}`);
+                        const filePath = path.join(__dirname, "hyl.mp3");
                         await sound.play(filePath);
                         process.exit(1);
                     }
@@ -123,8 +124,8 @@ inquirer.prompt([
         name: "types",
         message: "请选择您要查询的iPhone型号?",
         choices: choices.sort((a, b) => a.name.localeCompare(b.name)),
-        default: ['MQ873CH/A', 'MQ8A3CH/A', 'MQ883CH/A'],
-        // default: ['MPVU3CH/A']
+        // default: ['MQ873CH/A', 'MQ8A3CH/A', 'MQ883CH/A'],
+        default: ['MQ8A3CH/A']
     },
     {
         type: "input",
@@ -161,7 +162,6 @@ inquirer.prompt([
             {
                 name: '打开chorme',
                 value: 'google chrome',
-                checked: true
             },
             {
                 name: '打开safari',
@@ -173,17 +173,33 @@ inquirer.prompt([
                 name: '打开edge',
                 value: 'edge'
             }
-        ]
-
+        ],
+        default: 'google chrome'
+    },
+    {
+        type: 'list',
+        name: 'playMuisc',
+        message: "发现库存后是否自动播放音乐:",
+        choices: [
+            {
+                name: '否',
+                value: false,
+            },
+            {
+                name: '是',
+                value: true,
+            },
+        ],
+        default: false
     }
 ])
     .then(answers => {
-        const {address, types, interval, openBrowser} = answers;
+        const {address, types, interval, openBrowser, playMuisc} = answers;
         console.log(`地址：${address}，型号：${types.map(type => platform[type]).join(',')}，查询间隔：${interval}秒`);
         myVar = setInterval(async () => {
             try {
                 for (const type of types) {
-                    monitorIphoneStorage(type, address, openBrowser);
+                    monitorIphoneStorage({productName: type, locationName: address, openBrowser, playMuisc});
                 }
             } catch (e) {
                 console.error(e.message);
